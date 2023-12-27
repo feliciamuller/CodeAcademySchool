@@ -100,10 +100,19 @@ internal class MenuOptions
     }
     public void GetAllEmployees()
     {
-        var employees = context.Employees;
+        var employees = from employee in context.Employees
+                        join profession in context.Professions
+                        on employee.FkProfessionId equals profession.ProfessionId
+                        select new
+                        {
+                            FirstName = employee.FirstName,
+                            LastName = employee.LastName,
+                            Title = profession.ProfessionTitle
+                        };
+
         foreach (var employee in employees)
         {
-            Console.WriteLine(employee.FirstName + " " + employee.LastName);
+            Console.WriteLine(employee.FirstName + " " + employee.LastName + " - " + employee.Title + " Worked since: ");
         }
     }
     public void GetStudents()
