@@ -21,5 +21,5 @@ public partial class Student
 
     public virtual Class FkClass { get; set; } = null!;
 
-    public virtual Course? FkCourseEnrollment { get; set; }
+    public virtual CourseEnrollment? FkCourseEnrollment { get; set; }
 }

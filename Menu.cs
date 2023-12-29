@@ -1,4 +1,4 @@
-﻿using CodeAcademySchool.Data;
+﻿
 using CodeAcademySchool.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -36,13 +36,12 @@ internal class Menu
         {
             Console.WriteLine("Välj i menyn vad du vill göra:");
             Console.WriteLine("");
-            Console.WriteLine("1. Hämta personal\n" +
-            "2. Hämta elever\n" +
-            "3. Hämta elever i en viss klass\n" +
-            "4. Hämta alla betyg som satts i november\n" +
-            "5. Hämta alla kurser med snittbetyg, högsta betyg och lägsta betyg\n" +
-            "6. Lägga till nya elever\n" +
-            "7. Lägga till ny personal\n" +
+            Console.WriteLine("1. Hämta personalinformation\n" +
+            "2. Hämta elevinformation\n" +
+            "3. Hämta kursinformation\n" +
+            "4. Sätta betyg på elev (med transaction)\n" +//via transactions
+            "5. Lägga till nya elever\n" +
+            "6. Lägga till ny personal\n" +
             "0. Logga ut");
             success = int.TryParse(Console.ReadLine(), out input);
             if (!success)
@@ -54,24 +53,19 @@ internal class Menu
             switch (input)
             {  
                 case 1:
-                    menu.GetEmployees();
+                    menu.EmployeesInfo();
                     break;
                 case 2:
-                    menu.GetStudents();
+                    menu.StudentInfo();
                     break;
-                case 3:
-                    menu.GetClass();
+                case 3: menu.CourseInfo();
                     break;
-                case 4:
-                    menu.GetGradeRegistration();
+                case 4: menu.GradeRegTransaction();
                     break;
                 case 5:
-                    menu.AverageGrade();
-                    break;
-                case 6:
                     menu.AddStudents();
                     break;
-                case 7:
+                case 6:
                     menu.AddEmployees();
                     break;
                 case 0:

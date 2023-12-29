@@ -1,7 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace CodeAcademySchool.Models;
 
@@ -15,9 +13,11 @@ public partial class Employee
 
     public int FkProfessionId { get; set; }
 
+    public int? Salary { get; set; }
+
+    public DateTime? StartDate { get; set; }
+
     public virtual Profession FkProfession { get; set; } = null!;
 
     public virtual ICollection<GradeRegistration> GradeRegistrations { get; set; } = new List<GradeRegistration>();
-
-    
 }

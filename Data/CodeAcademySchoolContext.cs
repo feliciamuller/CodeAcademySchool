@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CodeAcademySchool.Models;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace CodeAcademySchool.Data;
 
@@ -11,13 +9,13 @@ public partial class CodeAcademySchoolContext : DbContext
 {
     public CodeAcademySchoolContext()
     {
-    
     }
+
     public CodeAcademySchoolContext(DbContextOptions<CodeAcademySchoolContext> options)
         : base(options)
     {
-
     }
+
     public virtual DbSet<Class> Classes { get; set; }
 
     public virtual DbSet<Course> Courses { get; set; }
@@ -33,9 +31,8 @@ public partial class CodeAcademySchoolContext : DbContext
     public virtual DbSet<Student> Students { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseSqlServer("Data Source = (localdb)\\MSSQLLocalDb;Initial Catalog = CodeAcademySchool; Integrated Security = True; ");
-    }
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDb; Database = CodeAcademySchool; Trusted_Connection=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -58,13 +55,18 @@ public partial class CodeAcademySchoolContext : DbContext
             entity.ToTable("CourseEnrollment");
 
             entity.Property(e => e.FkCourseId).HasColumnName("(FK)CourseId");
-            entity.Property(e => e.FkGradeRegistration).HasColumnName("(FK)GradeRegistration");
+            entity.Property(e => e.FkGradeRegistrationId).HasColumnName("(FK)GradeRegistrationId");
             entity.Property(e => e.FkStudentId).HasColumnName("(FK)StudentId");
 
             entity.HasOne(d => d.FkCourse).WithMany(p => p.CourseEnrollments)
                 .HasForeignKey(d => d.FkCourseId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_CourseEnrollment_Course");
+
+            entity.HasOne(d => d.FkGradeRegistration).WithMany(p => p.CourseEnrollments)
+                .HasForeignKey(d => d.FkGradeRegistrationId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CourseEnrollment_GradeRegistration");
 
             entity.HasOne(d => d.FkStudent).WithMany(p => p.CourseEnrollments)
                 .HasForeignKey(d => d.FkStudentId)
@@ -77,6 +79,7 @@ public partial class CodeAcademySchoolContext : DbContext
             entity.Property(e => e.FirstName).HasMaxLength(50);
             entity.Property(e => e.FkProfessionId).HasColumnName("(FK)ProfessionId");
             entity.Property(e => e.LastName).HasMaxLength(50);
+            entity.Property(e => e.StartDate).HasColumnType("date");
 
             entity.HasOne(d => d.FkProfession).WithMany(p => p.Employees)
                 .HasForeignKey(d => d.FkProfessionId)
@@ -91,10 +94,12 @@ public partial class CodeAcademySchoolContext : DbContext
             entity.Property(e => e.FkCourseId).HasColumnName("(FK)CourseId");
             entity.Property(e => e.FkEmployeeId).HasColumnName("(FK)EmployeeId");
             entity.Property(e => e.FkStudentId).HasColumnName("(FK)StudentId");
-            entity.Property(e => e.Grade)
-                .HasMaxLength(1)
-                .IsUnicode(false);
             entity.Property(e => e.RegistrationDate).HasColumnType("datetime");
+
+            entity.HasOne(d => d.FkCourse).WithMany(p => p.GradeRegistrations)
+                .HasForeignKey(d => d.FkCourseId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_GradeRegistration_Course");
 
             entity.HasOne(d => d.FkEmployee).WithMany(p => p.GradeRegistrations)
                 .HasForeignKey(d => d.FkEmployeeId)
@@ -126,7 +131,7 @@ public partial class CodeAcademySchoolContext : DbContext
 
             entity.HasOne(d => d.FkCourseEnrollment).WithMany(p => p.Students)
                 .HasForeignKey(d => d.FkCourseEnrollmentId)
-                .HasConstraintName("FK_Students_Course");
+                .HasConstraintName("FK_Students_CourseEnrollment");
         });
 
         OnModelCreatingPartial(modelBuilder);
